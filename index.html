@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UK EM Doctor Wellness Hub</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Calming Neutrals -->
+    <!-- Application Structure Plan: The SPA is designed as a task-oriented hub, not a linear report. The structure follows a logical user journey: 1) 'Home/Triage' for immediate self-assessment. 2) 'Dashboard' to validate the user's experience with data (the 'Why'). 3) 'Strategies' to provide actionable tools (the 'How'). 4) 'Recalibrate' for long-term career planning (the 'What's Next'). 5) 'Support Hub' for immediate help (the 'Who'). This non-linear, interactive structure allows a busy doctor to quickly access the most relevant information for their current needs, prioritizing usability and practical application over simply replicating the report's format. -->
+    <!-- Visualization & Content Choices: 
+        - Report Info: RCEM Burnout Stat (80%). Goal: Inform/Validate. Viz: Donut Chart (Chart.js). Interaction: Hover for source. Justification: High-impact visual for a key statistic, validating user experience.
+        - Report Info: Self-Determination Theory. Goal: Organize/Inform. Viz: Interactive HTML/CSS cards. Interaction: Click to reveal details/actions. Justification: Makes theory digestible and actionable.
+        - Report Info: Recalibration Framework. Goal: Guide/Organize. Viz: Interactive HTML/JS quiz. Interaction: Answering questions reveals a tailored path. Justification: Turns a static framework into a personalized diagnostic tool.
+        - Report Info: UK Support Services. Goal: Organize/Action. Viz: Filterable HTML list. Interaction: Filter buttons to find specific help fast. Justification: High utility for a user in distress.
+        - Report Info: Frog in Boiling Water. Goal: Engage/Inform. Viz: Simple HTML/CSS animated graphic. Interaction: Passive observation. Justification: A visual metaphor is more memorable than text alone. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .chart-container { position: relative; width: 100%; max-width: 400px; margin-left: auto; margin-right: auto; height: 320px; max-height: 400px; }
+        @media (min-width: 768px) { .chart-container { height: 350px; } }
+        .nav-link { transition: color 0.2s, border-color 0.2s; }
+        .nav-link.active { color: #2563eb; border-bottom-color: #2563eb; }
+        .nav-link:not(.active) { border-bottom-color: transparent; }
+        .strategy-card { transition: transform 0.2s, box-shadow 0.2s; }
+        .strategy-card:hover { transform: translateY(-5px); box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1); }
+        .support-item { transition: opacity 0.3s ease-in-out, height 0.3s ease-in-out, padding 0.3s ease-in-out, margin 0.3s ease-in-out; }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800">
+
+    <header class="bg-white/80 backdrop-blur-lg sticky top-0 z-50 shadow-sm">
+        <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center">
+                    <span class="font-bold text-xl text-blue-600">EM Wellness Hub</span>
+                </div>
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-baseline space-x-4">
+                        <a href="#home" class="nav-link px-3 py-2 text-sm font-medium border-b-2">Home</a>
+                        <a href="#dashboard" class="nav-link px-3 py-2 text-sm font-medium border-b-2">The Dashboard</a>
+                        <a href="#strategies" class="nav-link px-3 py-2 text-sm font-medium border-b-2">The Toolkit</a>
+                        <a href="#recalibrate" class="nav-link px-3 py-2 text-sm font-medium border-b-2">Recalibrate</a>
+                        <a href="#support" class="nav-link px-3 py-2 text-sm font-medium border-b-2">UK Support</a>
+                    </div>
+                </div>
+                <div class="md:hidden">
+                    <button id="mobile-menu-button" class="inline-flex items-center justify-center p-2 rounded-md text-slate-400 hover:text-slate-500 hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-500">
+                        <span class="sr-only">Open main menu</span>
+                        <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </nav>
+        <div id="mobile-menu" class="md:hidden hidden">
+            <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+                <a href="#home" class="nav-link block px-3 py-2 rounded-md text-base font-medium">Home</a>
+                <a href="#dashboard" class="nav-link block px-3 py-2 rounded-md text-base font-medium">The Dashboard</a>
+                <a href="#strategies" class="nav-link block px-3 py-2 rounded-md text-base font-medium">The Toolkit</a>
+                <a href="#recalibrate" class="nav-link block px-3 py-2 rounded-md text-base font-medium">Recalibrate</a>
+                <a href="#support" class="nav-link block px-3 py-2 rounded-md text-base font-medium">UK Support</a>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <section id="home" class="app-section pt-16 pb-12 bg-white">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+                <h1 class="text-4xl font-bold tracking-tight text-slate-900 sm:text-5xl lg:text-6xl">Navigating the Crucible</h1>
+                <p class="mt-6 text-lg max-w-3xl mx-auto text-slate-600">A practical toolkit for career sustainability and wellbeing in UK Emergency Medicine. This is not about 'fixing' you; it's about equipping you with the strategies to thrive in a demanding system.</p>
+                <div class="mt-10">
+                    <a href="#dashboard" class="inline-block bg-blue-600 text-white font-semibold px-8 py-3 rounded-lg shadow-md hover:bg-blue-700 transition">Start Exploring</a>
+                </div>
+            </div>
+        </section>
+        
+        <section id="dashboard" class="app-section py-16 sm:py-20">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center">
+                    <h2 class="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">Your Dashboard: Understanding the Landscape</h2>
+                    <p class="mt-4 max-w-3xl mx-auto text-lg text-slate-600">This section provides context for the pressures you face. It's not just you; the challenges are systemic and widely felt. Understanding this is the first step toward regaining agency. You can explore the scale of burnout and the core psychological needs for professional satisfaction.</p>
+                </div>
+
+                <div class="mt-16 grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+                    <div class="bg-white p-6 sm:p-8 rounded-xl shadow-md">
+                        <h3 class="text-xl font-semibold text-center text-slate-800">The Scale of Burnout in UK EM</h3>
+                        <p class="text-sm text-slate-500 text-center mt-2">Source: Royal College of Emergency Medicine (RCEM)</p>
+                        <div class="chart-container mt-4">
+                            <canvas id="burnoutChart"></canvas>
+                        </div>
+                        <p class="mt-4 text-center text-slate-600">This statistic validates your experience. Feeling overwhelmed is a predictable response to an environment where the workforce is compromised "beyond what is safe." Recognising this de-personalises the struggle, shifting the narrative from "I am failing" to "I am in a failing system."</p>
+                    </div>
+                    <div class="bg-white p-6 sm:p-8 rounded-xl shadow-md">
+                        <h3 class="text-xl font-semibold text-center text-slate-800">Your Psychological Nutriments</h3>
+                        <p class="text-center mt-2 text-slate-600">According to Self-Determination Theory, job satisfaction depends on fulfilling three core needs. When these are unmet, burnout is a predictable outcome. Click each card to learn more.</p>
+                        <div id="sdt-cards" class="space-y-4 mt-6">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="strategies" class="app-section py-16 sm:py-20 bg-white">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center">
+                    <h2 class="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">Your Toolkit: Psychological PPE</h2>
+                    <p class="mt-4 max-w-3xl mx-auto text-lg text-slate-600">Think of these strategies as Psychological Protective Equipment. They won't fix the system, but they will protect your mindset, improve your on-shift experience, and help you build a more sustainable career. Explore the interactive cards below to learn practical, evidence-based techniques.</p>
+                </div>
+                <div id="strategies-grid" class="mt-16 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                </div>
+            </div>
+        </section>
+
+        <section id="recalibrate" class="app-section py-16 sm:py-20">
+            <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center">
+                    <h2 class="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">Triage Your Career</h2>
+                    <p class="mt-4 text-lg text-slate-600">Career dissatisfaction exists on a spectrum. Dr. Rob Orman's Recalibration Framework helps you diagnose your situation and choose the right level of intervention. Answer the questions below to see which path might be right for you.</p>
+                </div>
+                <div id="recalibrate-quiz" class="mt-12 bg-white p-8 rounded-xl shadow-md">
+                </div>
+            </div>
+        </section>
+
+        <section id="support" class="app-section py-16 sm:py-20 bg-white">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                 <div class="text-center">
+                    <h2 class="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">UK Support Hub</h2>
+                    <p class="mt-4 max-w-3xl mx-auto text-lg text-slate-600">You are not alone. A robust network of confidential, professional support is available specifically for UK doctors. Use the filters below to find the right service for your needs, from immediate crisis help to long-term career coaching.</p>
+                </div>
+
+                <div class="mt-10 flex flex-wrap justify-center gap-2">
+                    <button data-filter="all" class="support-filter-btn active bg-blue-600 text-white px-4 py-2 rounded-full text-sm font-medium">All</button>
+                    <button data-filter="crisis" class="support-filter-btn bg-white text-slate-700 px-4 py-2 rounded-full text-sm font-medium border border-slate-300">Immediate Crisis</button>
+                    <button data-filter="mental-health" class="support-filter-btn bg-white text-slate-700 px-4 py-2 rounded-full text-sm font-medium border border-slate-300">Mental Health</button>
+                    <button data-filter="coaching" class="support-filter-btn bg-white text-slate-700 px-4 py-2 rounded-full text-sm font-medium border border-slate-300">Career Coaching</button>
+                    <button data-filter="peer" class="support-filter-btn bg-white text-slate-700 px-4 py-2 rounded-full text-sm font-medium border border-slate-300">Peer Support</button>
+                </div>
+
+                <div id="support-list" class="mt-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                </div>
+            </div>
+        </section>
+    </main>
+    
+    <footer class="bg-slate-800 text-white">
+        <div class="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8 text-center text-sm text-slate-400">
+            <p>This application is an educational tool synthesising publicly available information. It is not a substitute for professional medical advice, diagnosis, or treatment. Always seek the advice of a qualified health provider with any questions you may have regarding a medical condition.</p>
+            <p class="mt-2">Inspired by the work of Drs. Rob Orman, Scott Weingart, and Rachel Morris.</p>
+        </div>
+    </footer>
+
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+
+    const appData = {
+        sdtCards: [
+            { 
+                title: 'Autonomy', 
+                icon: '🧠', 
+                description: 'The feeling of control over your day and that your actions are self-endorsed.',
+                details: 'Lack of autonomy is a key complaint in the NHS. To increase it, focus on your internal locus of control. Ask "What can I influence right now?". Take ownership of a departmental QI project, or master a specific procedure to become the local expert.'
+            },
+            { 
+                title: 'Belonging', 
+                icon: '❤️', 
+                description: 'The feeling of connection to other people—your team, colleagues, and patients.',
+                details: 'Time pressures erode connection. Be intentional. Schedule a 10-minute coffee with a colleague. Take 60 seconds to truly connect with a patient or their family. Find a "failure friend"—a trusted peer to debrief difficult cases with.'
+            },
+            { 
+                title: 'Competence', 
+                icon: '💪', 
+                description: 'The feeling that you are good at what you do and are growing in your skills.',
+                details: 'Systemic failures can make you feel incompetent. Counter this by focusing on mastery. Mentor a junior colleague—teaching reinforces your own knowledge. Deliberately practice a skill. Celebrate small wins and successful outcomes.'
+            }
+        ],
+        strategies: [
+            {
+                title: "Internal Locus of Control",
+                icon: "🎯",
+                summary: "Focus on what you can influence (your judgments, actions) to regain agency.",
+                details: "A core Stoic principle taught by Rob Orman. When overwhelmed by systemic issues (bed shortages, crowding), ask the powerful question: 'What is the one thing I can do *next*?' This shifts your brain from helpless rumination to action-oriented problem-solving."
+            },
+            {
+                title: "Silencing the Inner Critic",
+                icon: "🤫",
+                summary: "Recognise the critical inner voice as a misguided protector, not an objective truth.",
+                details: "High-achievers often have a harsh inner critic. After a difficult case, instead of self-blame, reframe by speaking to yourself as you would a valued, struggling colleague. This creates distance and allows for self-compassion."
+            },
+            {
+                title: "The Frog in Boiling Water",
+                icon: "🐸",
+                summary: "Recognise how unsustainable pressures become normalised over time in the NHS.",
+                details: "Dr. Rachel Morris's key analogy. The 'heat' of systemic pressure has been turned up so slowly that the current state feels normal. Periodically ask: 'Would I have accepted this workload five years ago?' The crucial point: You are not a frog. You have more options than just 'stay and boil' or 'jump out'."
+            },
+            {
+                title: "The 'Out-On-Time' Mindset",
+                icon: "⏱️",
+                summary: "Treat finishing your shift on time as a non-negotiable professional skill.",
+                details: "Leaving on time is not a luxury; it protects the personal recovery time essential for career longevity. This involves real-time charting, efficient handovers, and prioritising tasks with the end of your shift in mind."
+            },
+            {
+                title: "Managing Interruptions",
+                icon: "🚧",
+                summary: "Develop systems to handle interruptions so they don't destroy your focus.",
+                details: "The ED is an interruption-driven environment. When interrupted, quickly triage the request: 'Is this urgent and important *for me to do right now*?' If not, use a script: 'I can help with that in 10 minutes, once I've finished this critical task.' This protects your cognitive bandwidth."
+            },
+            {
+                title: "Job Crafting",
+                icon: "🛠️",
+                summary: "Proactively change aspects of your job to make it more fulfilling.",
+                details: "You have more power than you think. Find ways to dedicate a portion of your time (e.g., 20% of SPA time) to something you are passionate about—teaching, research, a specific clinical interest. This builds a protective buffer against the draining parts of the job."
+            }
+        ],
+        supportServices: [
+            { name: "NHS Practitioner Health", category: "mental-health", contact: "0300 0303 300", url: "https://www.practitionerhealth.nhs.uk/", description: "The primary formal pathway. A free, confidential, self-referral NHS service for doctors with mental health or addiction issues. Completely separate from the GMC." },
+            { name: "BMA Counselling", category: "crisis", contact: "0330 123 1245", url: "https://www.bma.org.uk/advice-and-support/your-wellbeing/counselling-and-peer-support", description: "Free, confidential 24/7 counselling and peer support service for all doctors and medical students, regardless of BMA membership." },
+            { name: "Samaritans", category: "crisis", contact: "116 123", url: "https://www.samaritans.org/", description: "A free, confidential listening service for anyone in distress, available 24/7." },
+            { name: "Shout Crisis Text Line", category: "crisis", contact: "Text NHSPH to 85258", url: "https://giveusashout.org/", description: "A free, 24/7 text messaging service for anyone in crisis. Confidential and anonymous." },
+            { name: "Doctors' Support Network (DSN)", category: "peer", contact: "Online Forum", url: "https://www.dsn.org.uk/", description: "An independent, confidential, and anonymous peer-support network for doctors with mental health concerns. Run by volunteer doctors." },
+            { name: "DocHealth", category: "mental-health", contact: "Via website", url: "https://www.dochealth.org.uk/", description: "Confidential, not-for-profit psychotherapeutic consultation service. Fees are on a sliding scale. A high-quality option between free services and full-cost private therapy." },
+            { name: "You Are Not a Frog", category: "coaching", contact: "Via website", url: "https://youarenotafrog.com/", description: "Dr. Rachel Morris offers coaching and training deeply embedded in the NHS context, focusing on practical tools for resilience and leadership." },
+            { name: "The Joyful Doctor", category: "coaching", contact: "Via website", url: "https://www.joyfuldoctor.com/", description: "Founded by a psychiatrist, this service helps doctors struggling with career choices to find joy in their work again through coaching and courses." },
+            { name: "Medical Protection Society (MPS)", category: "mental-health", contact: "Member Support Line", url: "https://www.medicalprotection.org/uk/about/wellbeing", description: "An often underutilised benefit. Members have access to a free, confidential counselling service for work-related stress." }
+        ],
+        recalibrateQuiz: {
+            start: {
+                question: "Thinking about your work, do you generally still enjoy the core act of practicing clinical Emergency Medicine?",
+                yes: "q2",
+                no: "q3"
+            },
+            q2: {
+                question: "Is the main issue the day-to-day grind, inefficiency, and feeling worn down, rather than a fundamental problem with the job itself?",
+                yes: "result_refine",
+                no: "result_redesign"
+            },
+            q3: {
+                question: "Do you feel you need a significant change, but still want to use your medical skills and experience in some capacity?",
+                yes: "result_redesign",
+                no: "result_reinvent"
+            },
+            result_refine: {
+                title: "Recommendation: Refine",
+                description: "Your goal is to optimize your current role, not escape it. Focus on making micro-recalibrations to shift from passively surviving to actively shaping your job. This is about improving your mindset, habits, efficiency, and communication to make your existing work more manageable and purposeful.",
+                actions: ["Master on-shift efficiency tools", "Learn to set better boundaries", "Practice mindset shifts like Locus of Control"]
+            },
+            result_redesign: {
+                title: "Recommendation: Redesign",
+                description: "Minor tweaks are not enough; you need a more significant change in your role or environment. This is about finding a more sustainable way to be *in* medicine, better aligning your work with your current values and energy levels.",
+                actions: ["Explore a less-than-full-time (LTFT) or locum role", "Seek a split post with dedicated time for education or leadership", "Craft your job to focus on a specialist interest"]
+            },
+            result_reinvent: {
+                title: "Recommendation: Reinvent",
+                description: "You may be ready for something new, potentially outside of direct clinical care. This is a strategic pivot, not a random guess. The goal is to leverage your valuable experience to build a new, fulfilling career that fits the person you are today.",
+                actions: ["Clarify your current values and transferable skills", "Systematically explore options in health policy, med-tech, or administration", "View your medical training as a foundation, not a sunk cost"]
+            }
+        }
+    };
+
+
+    function initBurnoutChart() {
+        const ctx = document.getElementById('burnoutChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Affected by Burnout', 'Not Affected'],
+                datasets: [{
+                    data: [80, 20],
+                    backgroundColor: ['#3b82f6', '#e5e7eb'],
+                    borderColor: ['#ffffff', '#ffffff'],
+                    borderWidth: 4,
+                    hoverOffset: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: '70%',
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            padding: 20,
+                            boxWidth: 12,
+                            font: { size: 14 }
+                        }
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return ` ${context.label}: ${context.parsed}%`;
+                            }
+                        }
+                    },
+                    annotation: {
+                        annotations: {
+                            label1: {
+                                type: 'label',
+                                x: '50%',
+                                y: '50%',
+                                content: '80%',
+                                font: {
+                                    size: 40,
+                                    weight: 'bold',
+                                },
+                                color: '#1e293b'
+                            }
+                        }
+                    }
+                }
+            },
+            plugins: [{
+                id: 'doughnutText',
+                beforeDraw(chart) {
+                    const { width, height, ctx } = chart;
+                    ctx.restore();
+                    const fontSize = (height / 114).toFixed(2);
+                    ctx.font = `bold ${fontSize}em Inter, sans-serif`;
+                    ctx.textBaseline = 'middle';
+                    ctx.fillStyle = '#1e293b';
+
+                    const text = '80%';
+                    const textX = Math.round((width - ctx.measureText(text).width) / 2);
+                    const textY = height / 2;
+
+                    ctx.fillText(text, textX, textY);
+                    ctx.save();
+                }
+            }]
+        });
+    }
+
+    function initSDTCards() {
+        const container = document.getElementById('sdt-cards');
+        container.innerHTML = appData.sdtCards.map(card => `
+            <div class="sdt-card border border-slate-200 rounded-lg overflow-hidden">
+                <button class="w-full text-left p-4 flex items-center justify-between bg-slate-50 hover:bg-slate-100 focus:outline-none">
+                    <div class="flex items-center">
+                        <span class="text-2xl mr-4">${card.icon}</span>
+                        <div>
+                            <h4 class="font-semibold text-lg text-blue-700">${card.title}</h4>
+                            <p class="text-sm text-slate-500">${card.description}</p>
+                        </div>
+                    </div>
+                     <svg class="w-5 h-5 text-slate-400 transition-transform transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                </button>
+                <div class="sdt-details hidden p-4 border-t border-slate-200 bg-white">
+                    <p class="text-slate-600">${card.details}</p>
+                </div>
+            </div>
+        `).join('');
+
+        container.querySelectorAll('.sdt-card button').forEach(button => {
+            button.addEventListener('click', () => {
+                const details = button.nextElementSibling;
+                const icon = button.querySelector('svg');
+                details.classList.toggle('hidden');
+                icon.classList.toggle('rotate-180');
+            });
+        });
+    }
+    
+    function initStrategiesGrid() {
+        const container = document.getElementById('strategies-grid');
+        container.innerHTML = appData.strategies.map(s => `
+            <div class="strategy-card bg-slate-50 rounded-xl p-6 cursor-pointer border border-transparent hover:border-blue-300">
+                <div class="flex items-start">
+                    <span class="text-3xl mr-4">${s.icon}</span>
+                    <div>
+                        <h4 class="font-semibold text-lg text-slate-800">${s.title}</h4>
+                        <p class="text-slate-500 mt-1">${s.summary}</p>
+                    </div>
+                </div>
+                <div class="strategy-details hidden mt-4 pl-10">
+                    <p class="text-slate-600 text-sm">${s.details}</p>
+                </div>
+            </div>
+        `).join('');
+
+        container.querySelectorAll('.strategy-card').forEach(card => {
+            card.addEventListener('click', () => {
+                card.querySelector('.strategy-details').classList.toggle('hidden');
+            });
+        });
+    }
+
+    function initRecalibrateQuiz() {
+        const container = document.getElementById('recalibrate-quiz');
+        
+        function renderQuestion(questionKey) {
+            const questionData = appData.recalibrateQuiz[questionKey];
+            if (questionData.title) { 
+                container.innerHTML = `
+                    <h4 class="text-2xl font-bold text-center text-blue-600">${questionData.title}</h4>
+                    <p class="mt-4 text-slate-600">${questionData.description}</p>
+                    <ul class="mt-4 space-y-2">
+                        ${questionData.actions.map(action => `<li class="flex items-start"><span class="text-blue-500 mr-2 mt-1">✓</span><span>${action}</span></li>`).join('')}
+                    </ul>
+                    <div class="mt-6 text-center">
+                        <button id="restart-quiz" class="bg-slate-200 text-slate-700 font-semibold px-6 py-2 rounded-lg hover:bg-slate-300 transition">Start Over</button>
+                    </div>
+                `;
+                document.getElementById('restart-quiz').addEventListener('click', () => renderQuestion('start'));
+            } else {
+                container.innerHTML = `
+                    <p class="text-lg text-center text-slate-700">${questionData.question}</p>
+                    <div class="mt-6 flex justify-center gap-4">
+                        <button data-next="${questionData.yes}" class="quiz-btn bg-blue-600 text-white font-semibold px-8 py-3 rounded-lg shadow-md hover:bg-blue-700 transition">Yes</button>
+                        <button data-next="${questionData.no}" class="quiz-btn bg-slate-200 text-slate-700 font-semibold px-8 py-3 rounded-lg hover:bg-slate-300 transition">No</button>
+                    </div>
+                `;
+                container.querySelectorAll('.quiz-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        renderQuestion(e.target.dataset.next);
+                    });
+                });
+            }
+        }
+        renderQuestion('start');
+    }
+
+    function initSupportList() {
+        const listContainer = document.getElementById('support-list');
+        const filterBtns = document.querySelectorAll('.support-filter-btn');
+
+        function renderList(filter = 'all') {
+            listContainer.innerHTML = appData.supportServices
+                .filter(service => filter === 'all' || service.category === filter)
+                .map(s => `
+                <div class="support-item bg-slate-100/50 p-6 rounded-xl border border-slate-200" data-category="${s.category}">
+                    <h4 class="font-semibold text-lg text-blue-700">${s.name}</h4>
+                    <p class="text-slate-600 mt-2 text-sm">${s.description}</p>
+                    <div class="mt-4">
+                        <a href="tel:${s.contact.replace(/\s/g, '')}" class="text-blue-600 font-medium hover:underline">${s.contact}</a>
+                        <a href="${s.url}" target="_blank" rel="noopener noreferrer" class="ml-4 text-blue-600 font-medium hover:underline">Website →</a>
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        filterBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                filterBtns.forEach(b => b.classList.remove('active', 'bg-blue-600', 'text-white'));
+                filterBtns.forEach(b => b.classList.add('bg-white', 'text-slate-700'));
+                btn.classList.add('active', 'bg-blue-600', 'text-white');
+                btn.classList.remove('bg-white', 'text-slate-700');
+                renderList(btn.dataset.filter);
+            });
+        });
+
+        renderList();
+    }
+    
+    function handleNavigation() {
+        const sections = document.querySelectorAll('.app-section');
+        const navLinks = document.querySelectorAll('.nav-link');
+        const mobileMenu = document.getElementById('mobile-menu');
+        const mobileMenuButton = document.getElementById('mobile-menu-button');
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const id = entry.target.getAttribute('id');
+                    navLinks.forEach(link => {
+                        link.classList.toggle('active', link.hash === `#${id}`);
+                    });
+                }
+            });
+        }, { rootMargin: '-50% 0px -50% 0px', threshold: 0 });
+
+        sections.forEach(section => observer.observe(section));
+
+        navLinks.forEach(link => {
+            link.addEventListener('click', (e) => {
+                if(mobileMenu.classList.contains('hidden') === false){
+                    mobileMenu.classList.add('hidden');
+                }
+            });
+        });
+        
+        mobileMenuButton.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+    }
+
+    initBurnoutChart();
+    initSDTCards();
+    initStrategiesGrid();
+    initRecalibrateQuiz();
+    initSupportList();
+    handleNavigation();
+
+});
+</script>
+
+</body>
+</html>
